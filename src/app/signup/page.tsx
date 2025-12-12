@@ -13,32 +13,33 @@ export default function SignupPage() {
     username: "",
   });
 
-  const [buttonDisabled, setButtonDisabled] = React.useState(false);
+  const [buttonDisabled, setButtonDisabled] = React.useState(true);
   const [loading, setLoading] = React.useState(false);
-
   const [showPassword, setShowPassword] = React.useState(false);
 
   const onSignUp = async () => {
     try {
       setLoading(true);
+
       const response = await axios.post("/api/users/signup", user);
       console.log("Signup Success", response.data);
-      toast.success("Signup Successfull!!!",{ duration: 3000 });
+
+      toast.success(response.data.message, { duration: 3000 });
+
       router.push("/login");
     } catch (error: any) {
-      console.log("Signup failed,error.message");
-      toast.error(error.message,{ duration: 3000 });
+      console.log("Signup failed:", error);
+
+      const errorMessage =
+        error.response?.data?.error || error.message || "Signup failed";
+      toast.error(errorMessage, { duration: 3000 });
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (
-      user.email.length > 0 &&
-      user.password.length > 0 &&
-      user.username.length > 0
-    ) {
+    if (user.email && user.password && user.username) {
       setButtonDisabled(false);
     } else {
       setButtonDisabled(true);
@@ -110,15 +111,15 @@ export default function SignupPage() {
 
         <button
           onClick={onSignUp}
-          disabled={buttonDisabled}
+          disabled={buttonDisabled || loading}
           className={`w-full py-3 rounded-lg font-semibold transition-all
-        ${
-          buttonDisabled
-            ? "bg-indigo-400/40 text-white cursor-not-allowed"
-            : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30"
-        }`}
+            ${
+              buttonDisabled || loading
+                ? "bg-indigo-400/40 text-white cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30"
+            }`}
         >
-          {buttonDisabled ? "No Signup" : "Signup"}
+          {loading ? "Processing..." : "Signup"}
         </button>
 
         <p className="text-center text-gray-300 mt-4">
