@@ -11,11 +11,11 @@ export default function ProfilePage() {
   const logout = async () => {
     try {
       await axios.get("/api/users/logout");
-      toast.success("Logout sucessfully");
+      toast.success("Logout sucessfully",{ duration: 3000 });
       router.push("/login");
     } catch (error: any) {
       console.log(error.message);
-      toast.error(error.message);
+      toast.error(error.message,{ duration: 3000 });
     }
   };
   const getUserDetails = async () => {
